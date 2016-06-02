@@ -332,7 +332,7 @@ go = do
   We try and use a simple two-state Markov chain to generate stall patterns that
   (hopefully) resemble those found in the YouSlow traces. The generation code
   below is adapted from the simplified Gilbert loss generation code found in
-  [[https://github.com/BLINDEDFORREVIEW]]. This approach should
+  [[https://github.com/mvarela/Gilbert-Loss-Trace-Generator]]. This approach should
   allow to generate patterns that actually have the desired target statistics
   (which for short video durations, is not necessarily easy to obtain as it may
   take up to 4K iterations for the process to reach a steady state, based on
