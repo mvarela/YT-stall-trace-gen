@@ -1,0 +1,1125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>YouSlow Data Set Analysis and YouTube-like Stall Pattern Generation</title>
+<!-- 2016-04-22 Fri 10:20 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="BLINDED FOR REVIEW" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/javascript" src="http://orgmode.org/mathjax/MathJax.js"></script>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        // Only one of the two following lines, depending on user settings
+        // First allows browser-native MathML display, second forces HTML/CSS
+        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 100,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        }
+    });
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">YouSlow Data Set Analysis and YouTube-like Stall Pattern Generation</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Instructions</a></li>
+<li><a href="#sec-2">2. YouSlow Data Analysis</a>
+<ul>
+<li><a href="#sec-2-1">2.1. Data</a></li>
+<li><a href="#sec-2-2">2.2. Analysis</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. Results</a>
+<ul>
+<li><a href="#sec-3-1">3.1. <span class="todo TODO">TODO</span> Check a normalized version of the inter-stall times</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4. Gilbert-like Pattern Generation</a>
+<ul>
+<li><a href="#sec-4-1">4.1. Testing the generator</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5. Analysis of the results</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Instructions</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This org-mode file contains all the code needed to perform the analysis of
+YouSlow stall traces and the generation of YouTube-like stall patterns. The text
+below intersperses prose and code, in a literate programming style, and along
+with the data set and a couple of auxiliary files, it provides all the needed
+tools to reproduce our results. If the file <code>youtube_rebuffering_dist.txt</code> is
+not present in the same directory as this one, please uncompress the file
+<code>youtube_rebuffering_dist.txt.zip</code> before moving on.
+</p>
+
+<p>
+This file has been tested under Mac OS X, and it should work equally under Linux
+or other *nix operating systems. Operation under Windows will probably require
+minor modifications to the code below. 
+</p>
+
+<p>
+The requirements to perform all of the analysis and code generation are:
+</p>
+<ul class="org-ul">
+<li>A shell (e.g., bash, zsh)
+</li>
+<li>A Haskell compiler, and the <code>hstats</code> package installed
+</li>
+<li>Ruby 
+</li>
+<li>Gnuplot
+</li>
+<li>R
+</li>
+</ul>
+
+<p>
+It also requires a modern Emacs installation, with org-mode 8.x properly
+configured (org-mode is included with Emacs, so no additional packages should be
+required). The emacs-lisp code below ensures that all the org-babel modules
+needed are loaded.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (sh . t)
+   (haskell . t)
+   (R . t)
+   (ruby . t)
+   (gnuplot . t)
+   ))
+</pre>
+</div>
+
+<p>
+If you are starting from the bare org-mode file and data set, you may want to
+execute the shell code below in order to create some required directories.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">mkdir out 2&gt;&amp;1 &gt;/dev/null 
+mkdir YouSlow 2&gt;&amp;1 &gt;/dev/null 
+mkdir R 2&gt;&amp;1 &gt;/dev/null
+</pre>
+</div>
+
+<p>
+In order to proceed from only the org-mode file, you should first execute the
+<code>org-babel-tangle</code> command, in order to generate all the relevant source code
+from the literate code below. You can then proceed by executing the different
+code blocks for compiling and running the code, as well as for creating the
+plots and summary statistics. 
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> YouSlow Data Analysis</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+What follows is a first step towards analysing the stalling patterns of the
+YouSlow data provided by Hyunwoo. 
+</p>
+</div>
+
+<div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Data</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+The data is provided in the form of strings of '<code>=</code>' and '<code>*</code>'
+characters, each representing a second of normal playback of stall time,
+respeectively. Each record in the file is preceded by condition id number.
+</p>
+
+<p>
+A pattern might look as follows:
+</p>
+<pre class="example">
+96: *=================*==================*=====*=*==========================================
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Analysis</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+We start by defining a couple of suitable data types to represent a playout.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">module YouSlow.Analytics where
+import Numeric.Statistics
+import Data.List
+
+data State = S_Play | S_Stall deriving Eq
+instance Show State where
+    show S_Play  = "="
+    show S_Stall = "*"
+data Playout = Playout { seq_number     :: Int
+		       , video_duration :: Int
+		       , stall_time     :: Int 
+		       , pattern        :: [State]}
+instance Show Playout where
+  show p = show(seq_number p) ++ ": " ++ concatMap show (pattern p)
+</pre>
+</div>
+
+<p>
+In order to parse the data provided into the types created, we use the
+following:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">playoutFromString s = Playout {seq_number = sn, video_duration = d, stall_time = st, pattern = p}
+		    where sn = read (head xs)::Int
+			  p  = statesFromString $ xs!!1
+			  d  = length.concat $ playEvents p
+			  st = length.concat $ stallEvents p
+			  xs = words.filter(/=':') $  s
+
+
+playoutFromPattern sn p = Playout {seq_number = sn, video_duration = d, stall_time = st, pattern = p}
+			where d  = length.concat $ playEvents p
+			      st = length.concat $ stallEvents p
+statesFromString = map readState
+			where readState '=' = S_Play
+			      readState '*' = S_Stall
+</pre>
+</div>
+
+<p>
+The <code>stallEvents</code> and <code>playEvents</code> auxiliary functions provide lists of
+stalling and playout periods, respectively. This is useful for calculating
+the averages and other stats, as well the structure of the stall events later
+on.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">groupStates s  = filter (\e -&gt; head e == s).groupBy (\x y -&gt; x == y &amp;&amp; y == s) 
+groupStates' s = filter (\e -&gt; fst (head e) == s).groupBy (\x y -&gt; fst x == fst y &amp;&amp; fst y == s)
+stallEvents    = groupStates S_Stall 
+playEvents     = groupStates S_Play 
+
+stallTimes :: Playout -&gt;  [(Int,Int)]
+stallTimes p = map getTimes $ groupStates' S_Stall $ zip (pattern p) [1..]
+	     where getTimes s = (snd.head $ s, length s)
+</pre>
+</div>
+
+<p>
+We calculate some basic stats on the stall events:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">stallStats s = (avg_duration, deviation, inter_arrival)
+	   where avg_duration = mean l 
+		 deviation     = stddevp l
+		 inter_arrival = mean p
+		 l             = lengths $ stallEvents s
+		 p             = lengths $ playEvents s
+		 lengths       = map (fromIntegral.length)
+</pre>
+</div>
+
+<p>
+The (simplified) Gilbert model for losses is a simple 2-state Markov chain,
+as shown below. It can be used to drive the generation of an ON/OFF process,
+which might be a good fit for analyzing and creating stall patterns in HTTP
+video streams.
+</p>
+
+
+<div class="figure">
+<p><img src="./figs/gilbert.png" alt="gilbert.png" />
+</p>
+<p><span class="figure-number">Figure 1:</span> The simplified Gilbert model</p>
+</div>
+
+<p>
+For the Gilbert parameters, we recall that if \(sr\) is the fraction of
+stalling time (of the total time considered, including both playout and
+stalls), and \(sd\) is the average stall duration, then we can calculate the
+\(p\) and \(q\) probabilities for transitioning between the playout state and the
+stall state, respectively, as: \(p = \frac{sr}{1-sr}.\frac{1}{sd}\), and
+\(q=1/sd\). In code, this is:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">gilbertParams playout = (p,q)
+			 where sr       = stalls / (play + stalls)
+			       play     = fromIntegral . video_duration $ playout
+			       stalls   = fromIntegral . stall_time $ playout
+			       sd       = if ss &gt; 0 
+					    then ss
+					    else 1 
+			       (ss,_,_) = stallStats.pattern $ playout
+			       p        = (sr / (1 - sr)) / sd
+			       q        = 1  / sd
+</pre>
+</div>
+
+<p>
+To describe the structure of the stalling pattern, we calculate the
+normalized length of each stall event in the trace. This allows to consider
+cases where the stats are similar, but the actual way in which the patterns
+occur can affect the playout (as per Tobias Hoßfeld's "Pippi Longstocking Calculus"
+paper).
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">stallStructure playout = intercalate ":" (map show norm)
+			where norm = map (\x -&gt; ceiling (x/m))  se 
+			      m    = minimum se
+			      se   = map (fromIntegral . length) $ (stallEvents . pattern) playout
+
+abstractStructure playout = intercalate ":" norm
+			where norm = map (pick m)  se 
+			      m    = minimum se
+			      se   = map (fromIntegral . length) $ (stallEvents . pattern) playout
+			      pick  n s
+				    | n == s     = "U"
+				    | otherwise  = "G"
+</pre>
+</div>
+
+
+<p>
+The rest of the code takes care of filtering and printing the data as
+tab-separated lines on <code>stdout</code>.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">-- "id\tduration\ttotal_stall_time\tstall_ratio\tavg_stall_duration\tstall_duration_stddev\tavg_inter_stall_time\tGilbert_p\tGilbert_q\tstallStructuren\n" ++
+formatStats p = show (seq_number p) ++ "\t" ++
+		show (video_duration p) ++ "\t" ++
+		show (stall_time p) ++ "\t" ++
+		show (stall_ratio p) ++ "\t" ++
+		show sad ++ "\t" ++
+		show sdev ++ "\t" ++
+		show siat ++ "\t" ++
+		show gp ++ "\t" ++
+		show gq ++ "\t" ++
+		stallStructure p ++ "\n"
+	      where  (gp,gq)         = gilbertParams p
+		     (sad,sdev,siat) = stallStats.pattern $ p
+		     stall_ratio p = (fromIntegral.stall_time $ p)/ (fromIntegral.video_duration $ p)
+
+minimumPlayout = 30
+sane p = video_duration p &gt; minimumPlayout &amp;&amp; stall_time p &gt; 0
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">module Main where
+import YouSlow.Analytics
+import Control.Monad
+main = do
+     putStrLn "id\tduration\ttotal_stall_time\tstall_ratio\tavg_stall_duration\tstall_duration_stddev\tavg_inter_stall_time\tGilbert_p\tGilbert_q\tstall_structure\n" 
+     go
+
+go = do     
+   line &lt;- getLine
+   unless (null line) $ 
+      do
+	let p = playoutFromString line
+	when (sane p) $  (putStr.formatStats) p
+	go
+</pre>
+</div>
+
+
+<p>
+We build the code like so:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">ghc -O2 -o process_stalls stalls.hs
+</pre>
+</div>
+
+<p>
+And run it:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">./process_stalls &lt; youtube_rebuffering_dist.txt &gt; stats.tsv
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Results</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+We take a quick look at the average stall durations, and their stddev using gnuplot:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-gnuplot">set term png size 8000,600
+set size 1.1,1
+set key off
+set xlabel 'Sample'
+set ylabel 'Time (s)'
+set xrange [1:600000]
+set yrange [1:600]
+set title 'Avg. Inter-stall Times'
+set out 'figs/full_inter_stall_times.png'  lt rgb "#87789E" 
+plot 'stats.tsv' using 1:7
+
+set yrange[1:300]
+set out 'figs/full_stall_durations.png'
+set title 'Stall durations'
+plot 'stats.tsv' using 1:5  lt rgb "#90789E" 
+
+set out 'figs/full_stall_stddev.png'
+set title 'Stddev of Stall Durations' 
+plot 'stats.tsv' using 1:6 lt rgb "#869E78" 
+
+
+
+set term png size 1000,600
+set size 1,1
+set xrange [1:5000]
+set yrange [1:600]
+set title 'Avg. Inter-stall Times'
+set out 'figs/inter_stall_times.png'  lt rgb "#87789E" 
+plot 'stats.tsv' using 1:7
+
+set yrange[1:300]
+set out 'figs/stall_durations.png'
+set title 'Stall durations'
+plot 'stats.tsv' using 1:5  lt rgb "#90789E" 
+
+set out 'figs/stall_stddev.png'
+set title 'Stddev of Stall Durations' 
+plot 'stats.tsv' using 1:6 lt rgb "#869E78"
+</pre>
+</div>
+
+
+
+
+<div class="figure">
+<p><img src="./figs/full_stall_durations.png" alt="full_stall_durations.png" />
+</p>
+<p><span class="figure-number">Figure 2:</span> Average stall durations (clipped at 300s)</p>
+</div>
+
+
+<div class="figure">
+<p><img src="./figs/full_stall_stddev.png" alt="full_stall_stddev.png" />
+</p>
+<p><span class="figure-number">Figure 3:</span> Stddev of stall durations (clipped at 300)</p>
+</div>
+
+
+<div class="figure">
+<p><img src="./figs/full_inter_stall_times.png" alt="full_inter_stall_times.png" />
+</p>
+<p><span class="figure-number">Figure 4:</span> Average inter-stall times (clipped at 600s)</p>
+</div>
+
+
+
+
+<p>
+At first sight, it would seem that higher stalling times also lead to higher
+variation among them. The inter-stall times are all significantly more
+variable, but this also may be due to the different video lengths observed. 
+</p>
+</div>
+<div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> <span class="todo TODO">TODO</span> Check a normalized version of the inter-stall times</h3>
+</div>
+</div>
+
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Gilbert-like Pattern Generation</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+We try and use a simple two-state Markov chain to generate stall patterns that
+(hopefully) resemble those found in the YouSlow traces. The generation code
+below is adapted from the simplified Gilbert loss generation code found in
+<a href="https://github.com/BLINDEDFORREVIEW">https://github.com/BLINDEDFORREVIEW</a>. This approach should
+allow to generate patterns that actually have the desired target statistics
+(which for short video durations, is not necessarily easy to obtain as it may
+take up to 4K iterations for the process to reach a steady state, based on
+previous empirical results)
+</p>
+
+<p>
+The approach taken is therefore to generate a sufficiently large number of
+patterns, and chose those that fit our criteria.
+</p>
+
+<p>
+The output will be in the form of XML documents, which is what our
+instrumented player uses as inputs. An example of the desired output could
+look like the following:
+</p>
+
+<pre class="example">
+&lt;QSEvent&gt;
+&lt;TimeMs&gt;11000&lt;/TimeMs&gt;
+&lt;DurationMs&gt;5000&lt;/DurationMs&gt;
+&lt;/QSEvent&gt;
+</pre>
+
+<p>
+For the time being we will limit the granularity of the times used to seconds,
+to stay in the same scale as the YouSlow dataset. If need be, we can easily
+modify the generation code to deal with time in milliseconds.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">module Main where
+import YouSlow.Analytics
+import System.Random
+import System.Environment
+import Data.List
+</pre>
+</div>
+
+<p>
+We will accept patterns with up to a 0.1 difference in the actual stall rate
+wrt the target stall rate. For the average stall duration, we can allow a 10%
+variation from the target duration. Finally, we ensure that the pattern does
+not end in a stall event.
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">checkPattern tsr tsd struct len playout
+      | tsr &gt; 0 = (abs (tsr - sr) &lt; 0.1) &amp;&amp; ((abs(tsd -sd)/tsd) &lt;= 0.1) &amp;&amp; (S_Stall /= (last . pattern $ playout))  &amp;&amp; structure &amp;&amp; len == video_duration playout
+      | otherwise = tsr == 0
+	 where sr       = stalls / (play + stalls)
+	       play     = fromIntegral . video_duration $ playout
+	       stalls   = fromIntegral . stall_time $ playout
+	       (sd,_,_) = stallStats .pattern $ playout
+	       structure 
+		   | struct == "NONE" = True
+		   | otherwise = struct == abstractStructure playout
+</pre>
+</div>
+
+<p>
+We will generate a number sequences that satisfy the criteria defined above
+for closeness to the target stall time and average duration of the stall
+events. We then take the first \(k\) sequences that fit the bill from a
+lazily-generated list of potential sequences (the list could be in principle
+infinite, but in practice we limit it to a large number of elements to ensure
+that the program terminates in cases where the desired stall pattern is not
+feasible).
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">selectPatterns k tsr tsd struct len s = take k $ filter (checkPattern tsr tsd struct len) s'
+				    where s'       = zipWith (curry cp) [1..] s
+					  cp (n,p) = playoutFromPattern n p
+</pre>
+</div>
+
+<p>
+As mentioned above, we limit the search space to a large number of patterns,
+so as to guarantee termination. We arbitrarily set the number here to 50000
+patterns. With that, we generate a number of seeds to be used for the RNG to
+generate a repeatable series of patterns (for reproducibility purposes), based
+on a single seed s.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">seeds s = take 50000 (randoms $ mkStdGen s)::[Int]
+</pre>
+</div>
+
+<p>
+For the actual pattern creation, we simply implement the Gilbert model
+described above.
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">createPattern :: Double -&gt; Double -&gt; Int -&gt; Int -&gt; [State]
+createPattern tsr tsd k s = unfoldr fgen (p, q, S_Play, probs)
+  where 
+    probs = take k $  randoms (mkStdGen s)::[Double]
+    p     = (tsr/(1-tsr))/mbs
+    q     = 1/mbs
+    mbs 
+       | tsd &gt; 0 = tsd
+       | otherwise = 1
+
+fgen ::  (Double, Double, State , [Double]) -&gt; 
+	 Maybe (State, (Double, Double, State, [Double]))
+fgen  (_,  _,  _,        [])           =  Nothing
+fgen  (p,  q,  current,  probs)        =  Just (next, (p, q, next, tail probs))
+  where 
+    next = case current of 
+      S_Play    -&gt;  if p &lt;= head probs 
+		    then S_Play     
+		    else S_Stall
+      S_Stall  -&gt;  if q &lt;= head probs 
+		    then S_Stall 
+		    else S_Play
+</pre>
+</div>
+
+<p>
+With the generation function in place, we can now create an infinite
+(sufficientlyt long, really) list of patterns with the sought properties. 
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">sequences tsr tsd k s  =  map (createPattern tsr tsd k) $ 
+			    seeds s
+</pre>
+</div>
+
+
+<p>
+The main code of the generator takes the desired parameters (ratio of stall time
+to playback time, average stall duration, video duration, number of patterns, a
+seed for the RNG and the structure of the stalling patterns) and
+generates the desired patterns, printing them into two files, once in the same
+format as the YouSlow dataset, for analysis, and the other in the XML format
+described above, for actual usage.
+</p>
+
+<p>
+For the structure of the patterns, we'll use an abstract representation, using
+the shortest pattern as the unit (U), and then classifying the other patterns as
+either also unit or greater (G). With this in mind, a playout with three stalls
+of equal length would have a strcuture of "U:U:U", whereas a pattern with two
+stalls in which the first stall is longer than the second, would have a
+structure of "G:U", and so on. It is immediate that filtering on the structure
+of the pattern imposes a restriction on the generation, in terms of the number
+of stalls in the pattern. The structure parameter can be omitted, if not needed.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">  main = do
+    args &lt;- getArgs
+    let tsrIn      =  read $ args!!0::Double
+	tsd      =  read $ args!!1::Double
+	duration =  read $ args!!2::Int
+	numS     =  read $ args!!3::Int
+	seed     =  read $ args!!4::Int
+	struct   =  if (length args &lt; 6) then "NONE" else args!!5  -- structure of stalling patterns, in terms of relative size.
+	lenS     = duration + ceiling(tsrIn * fromIntegral duration)
+--  the tsr needs to be adjusted so that the target stall rate for the generation is correct.
+	tsr      = tsrIn  * (1 + tsrIn)
+	playouts = selectPatterns numS tsr tsd struct duration $ sequences tsr tsd lenS seed
+    writeFile "out/traces.txt" $ intercalate "\n" (map show playouts)
+    mapM_ createStallLogs $ zip playouts [1..]
+</pre>
+</div>
+
+<p>
+The XML representation is simple enough that no proper XML library is needed,
+instead, we just calculate the start and duration for each stall event, and
+generate the needed XML string from that. For each pattern generated, a file is
+created with the stall events in it. 
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-haskell">xmlStalls = map prettyPrint
+       where prettyPrint (s,d) = "&lt;QSEvent&gt;\n\t&lt;TimeMS&gt;" ++ show((s::Int)*1000)
+				++ "&lt;/TimeMS&gt;\n\t&lt;DurationMS&gt;" ++ show((d::Int)*1000)
+				++ "&lt;/DurationMS&gt;\n&lt;/QSEvent&gt;\n"
+createStallLogs (p,i) = writeFile ("out/stalls_" ++ show i ++ ".xml") $ concat $ xmlStalls.stallTimes $ p
+</pre>
+</div>
+
+<p>
+We build the generator as 
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">ghc -O2 -o generator generator.hs
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-sec-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Testing the generator</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+We will run the generator with the stats collected from the YouSlow traces,
+and see if we obtain similar behaviour. It's likely that some of the outlier
+traces will result in unfeasible inputs for the generator.
+</p>
+
+<p>
+We will generate the validation data as follows. Firstly, we will run the
+generator with the stats collected for each YouSlow trace, discard the xml
+output, and concatenate all the generated traces. We will then re-number the
+collected traces, in order to obtain comparable plots once we re-run the
+analysis on the generated traces. We note that some traces may not be
+generated, and will be skipped, so the first \(N\) generated traces will be
+actually a subset of the first \(M (M>N)\) conditions in the stats file, but
+there will not necessarily be a 1 to 1 correspondence between observed
+conditions and generated conditions. In future work we may modify this code
+to take this into account, and keep better track of the correspondence, to
+e.g., calculate correlations between the statistics of the generated traces
+and those of the observed ones.
+</p>
+
+<p>
+So, we begin with running the generator for each trace's parameters:
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-ruby">#!/usr/bin/env ruby
+lines = File.readlines "_stats.tsv"
+system "echo &gt; test_traces_collected.txt"
+#drop headers
+2.times{lines.shift}
+lines.each do |x|
+  l = x.split "\t"
+  system "./generator #{l[3]} #{l[4]} #{l[1]} 1 12345"
+  system "echo  &gt;&gt; out/traces.txt"
+  system "cat out/traces.txt &gt;&gt; test_traces_collected.txt"
+end
+# remove empty lines
+system "ex test_traces_collected.txt &lt; clean.ex"
+</pre>
+</div>
+
+<p>
+Once all the new traces have been generated, we re-number their <code>id</code> field.
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-ruby">lines = File.readlines "test_traces_collected.txt"
+output = File.open "test_traces_for_analysis.txt", "w"
+1.upto(lines.length) do |i|
+  l    = lines[i - 1].split ":"
+  l[0] = i
+  output.print (l.join ":")
+end
+</pre>
+</div>
+
+<p>
+We can then run it on the YouSlow traces (or a subset thereof) and check
+whether the generated patterns are similar to those observed in the
+wild. Given the brute-force approach used for generating the patterns, and
+the presence of extreme outliers in the original set, this script takes a
+very long time to run on the full set. This might be solved by introducing
+some filtering on the original set. For the time being, below are the results
+of the first 4500 or so generated traces (which took about 19h on a Macbook.
+For normal experimentation, the traces can be created in a few minutes).
+</p>
+
+<p>
+The generator script can be run as 
+</p>
+<pre class="example">
+./test_generator
+</pre>
+<p>
+Note that running this on a large set of conditions is very time consuming,
+and so we have not made it possible to execute from within Emacs, to avoid it
+blocking on the trace generation. Please run it from a separate shell.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">./process_stalls &lt; test_traces_for_analysis.txt &gt; test_stats.tsv
+</pre>
+</div>
+
+<p>
+We can now plot the results as we did with the original traces.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-gnuplot">set term png size 800,600
+set size 1,1
+set out 'figs/test_stall_durations.png'
+set yrange [1:100]
+set xrange [1:4500]
+plot 'test_stats.tsv' using 1:5 lt rgb "#90789E"
+
+set out 'figs/test_inter_stall_times.png' lt rgb "#87789E"
+plot 'test_stats.tsv' using 1:7
+
+set yrange [1:600]
+set out 'figs/test_stall_stddev.png'
+plot 'test_stats.tsv' using 1:6 lt rgb "#869E78"
+</pre>
+</div>
+
+
+
+
+<div class="figure">
+<p><img src="./figs/test_stall_durations.png" alt="test_stall_durations.png" />
+</p>
+<p><span class="figure-number">Figure 5:</span> Average stall durations (clipped at 100s)</p>
+</div>
+
+
+<div class="figure">
+<p><img src="./figs/test_stall_stddev.png" alt="test_stall_stddev.png" />
+</p>
+<p><span class="figure-number">Figure 6:</span> Stddev of stall durations (clipped at 600)</p>
+</div>
+
+
+<div class="figure">
+<p><img src="./figs/test_inter_stall_times.png" alt="test_inter_stall_times.png" />
+</p>
+<p><span class="figure-number">Figure 7:</span> Average inter-stall times (clipped at 100s)</p>
+</div>
+
+
+<p>
+Below is a similarly zoomed-in view on the original traces' plot
+(corresponding to a largely-overlapping set of trace characteristics)
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-gnuplot">set term png size 800,600
+set size 1,1
+set xrange [1:4500]
+set yrange [1:100]
+set out 'figs/stall_durations_restricted.png'
+plot 'stats.tsv' using 1:5 lt rgb "#90789E"
+
+set out 'figs/inter_stall_times_restricted.png' lt rgb "#87789E"
+plot 'stats.tsv' using 1:7
+
+set yrange [1:600]
+set out 'figs/stall_stddev_restricted.png'
+plot 'stats.tsv' using 1:6 lt rgb "#869E78"
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./figs/stall_durations_restricted.png" alt="stall_durations_restricted.png" />
+</p>
+<p><span class="figure-number">Figure 8:</span> Average stall durations (clipped at 100s)</p>
+</div>
+
+
+<div class="figure">
+<p><img src="./figs/stall_stddev_restricted.png" alt="stall_stddev_restricted.png" />
+</p>
+<p><span class="figure-number">Figure 9:</span> Stddev of stall durations (clipped at 600)</p>
+</div>
+
+
+<div class="figure">
+<p><img src="./figs/inter_stall_times_restricted.png" alt="inter_stall_times_restricted.png" />
+</p>
+<p><span class="figure-number">Figure 10:</span> Average inter-stall times (clipped at 100s)</p>
+</div>
+
+
+<p>
+At a glance, it would appear as though the generated traces behave in a similar
+way to the real ones, in terms of the variability of the stall duration, and of
+the inter-stall times.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Analysis of the results</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+We take a look at some basic statistics on the YouSlow traces and the generated
+traces, to see if the generartion works sufficiently well. The file
+<code>restricted_stats.tsv</code> corresponds to the first N lines of the <code>stats.tsv</code> file,
+with N being the number of lines on the generated traces stats file
+(<code>test_stats.tsv</code>), to make the comparison possible.
+</p>
+
+<p>
+In order to create the <code>restricted_stats.tsv</code> file, we can use the following
+code to find the number of conditions generated (let's call this "ZZZ")
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">wc -l test_stats.tsv
+</pre>
+</div>
+
+<p>
+With the traces generated so far, it outputs:
+</p>
+<pre class="example">
+4482 test_stats.tsv
+</pre>
+
+<p>
+and then run 
+</p>
+<pre class="example">
+tail -nZZZ stats.tsv &gt; restricted_stats.tsv
+</pre>
+<p>
+substituting ZZZ for the value above. 
+</p>
+
+<p>
+The R code below just produces sumary statistics for the relevant stalling
+pattern metrics. 
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R">o_stats &lt;- read.table('restricted_stats.tsv', header=TRUE)
+o_number_stalls &lt;- o_stats$total_stall_time / o_stats$avg_stall_duration
+s_number_stalls         &lt;- summary(o_number_stalls)
+s_avg_stall_duration    &lt;- summary(o_stats$avg_stall_duration)
+s_stall_duration_stddev &lt;- summary(o_stats$stall_duration_stddev)
+s_avg_inter_stall_time &lt;- summary(o_stats$avg_inter_stall_time)
+capture.output(s_number_stalls, file='R/number_stalls.txt')
+capture.output(s_avg_stall_duration, file='R/avg_stall_duration.txt')
+capture.output(s_stall_duration_stddev, file='R/stall_duration_stddev.txt')
+capture.output(s_avg_inter_stall_time, file='R/avg_inter_stall_time.txt')
+
+
+g_stats &lt;- read.table('test_stats.tsv', header=TRUE)
+sg_avg_stall_duration    &lt;- summary(g_stats$avg_stall_duration)
+sg_stall_duration_stddev &lt;- summary(g_stats$stall_duration_stddev)
+sg_avg_inter_stall_time &lt;- summary(g_stats$avg_inter_stall_time)
+capture.output(sg_avg_stall_duration, file='R/g_avg_stall_duration.txt')
+capture.output(sg_stall_duration_stddev, file='R/g_stall_duration_stddev.txt')
+capture.output(sg_avg_inter_stall_time, file='R/g_avg_inter_stall_time.txt')
+
+
+o_stats &lt;- read.table('stats.tsv', header=TRUE)
+o_number_stalls &lt;- o_stats$total_stall_time / o_stats$avg_stall_duration
+s_number_stalls         &lt;- summary(o_number_stalls)
+s_avg_stall_duration    &lt;- summary(o_stats$avg_stall_duration)
+s_stall_duration_stddev &lt;- summary(o_stats$stall_duration_stddev)
+s_avg_inter_stall_time &lt;- summary(o_stats$avg_inter_stall_time)
+capture.output(s_number_stalls, file='R/full_number_stalls.txt')
+capture.output(s_avg_stall_duration, file='R/full_avg_stall_duration.txt')
+capture.output(s_stall_duration_stddev, file='R/full_stall_duration_stddev.txt')
+capture.output(s_avg_inter_stall_time, file='R/full_avg_inter_stall_time.txt')
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: BLINDED FOR REVIEW</p>
+<p class="date">Created: 2016-04-22 Fri 10:20</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
