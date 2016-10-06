@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>YouSlow Data Set Analysis and YouTube-like Stall Pattern Generation</title>
-<!-- 2016-06-02 Thu 13:38 -->
+<!-- 2016-10-06 Thu 08:42 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Martin Varela" />
@@ -471,19 +471,15 @@ tab-separated lines on <code>stdout</code>.
 <div class="org-src-container">
 
 <pre class="src src-haskell">-- "id\tduration\ttotal_stall_time\tstall_ratio\tavg_stall_duration\tstall_duration_stddev\tavg_inter_stall_time\tGilbert_p\tGilbert_q\tstallStructuren\n" ++
-formatStats p = show (seq_number p) ++ "\t" ++
-		show (video_duration p) ++ "\t" ++
-		show (stall_time p) ++ "\t" ++
-		show (stall_ratio p) ++ "\t" ++
-		show sad ++ "\t" ++
-		show sdev ++ "\t" ++
-		show siat ++ "\t" ++
-		show gp ++ "\t" ++
-		show gq ++ "\t" ++
-		stallStructure p ++ "\n"
+formatStats p = (intercalate "\t" $ map show ls) ++ "\n"
 	      where  (gp,gq)         = gilbertParams p
 		     (sad,sdev,siat) = stallStats.pattern $ p
 		     stall_ratio p = (fromIntegral.stall_time $ p)/ (fromIntegral.video_duration $ p)
+		     ls = [seqno, vd, stime, sratio, sad, sdev, siat, gp, gq]
+		     seqno = fromIntegral $ seq_number p
+		     vd = fromIntegral $ video_duration p
+		     stime = fromIntegral $ stall_time p
+		     sratio = stall_ratio p
 
 minimumPlayout = 30
 sane p = video_duration p &gt; minimumPlayout &amp;&amp; stall_time p &gt; 0
@@ -627,7 +623,7 @@ variable, but this also may be due to the different video lengths observed.
 We try and use a simple two-state Markov chain to generate stall patterns that
 (hopefully) resemble those found in the YouSlow traces. The generation code
 below is adapted from the simplified Gilbert loss generation code found in
-<a href="https://github.com/mvarela/Gilbert-Loss-Trace-Generator">https://github.com/mvarela/Gilbert-Loss-Trace-Generator</a>. This approach should
+<a href="https://github.com/BLINDEDFORREVIEW">https://github.com/BLINDEDFORREVIEW</a>. This approach should
 allow to generate patterns that actually have the desired target statistics
 (which for short video durations, is not necessarily easy to obtain as it may
 take up to 4K iterations for the process to reach a steady state, based on
@@ -1117,7 +1113,7 @@ capture.output(s_avg_inter_stall_time, file='R/full_avg_inter_stall_time.txt')
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Martin Varela</p>
-<p class="date">Created: 2016-06-02 Thu 13:38</p>
+<p class="date">Created: 2016-10-06 Thu 08:42</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>

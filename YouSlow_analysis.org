@@ -213,20 +213,16 @@ abstractStructure playout = intercalate ":" norm
 #+begin_src haskell :tangle YouSlow/Analytics.hs
 
 -- "id\tduration\ttotal_stall_time\tstall_ratio\tavg_stall_duration\tstall_duration_stddev\tavg_inter_stall_time\tGilbert_p\tGilbert_q\tstallStructuren\n" ++
-formatStats p = show (seq_number p) ++ "\t" ++
-                show (video_duration p) ++ "\t" ++
-                show (stall_time p) ++ "\t" ++
-                show (stall_ratio p) ++ "\t" ++
-                show sad ++ "\t" ++
-                show sdev ++ "\t" ++
-                show siat ++ "\t" ++
-                show gp ++ "\t" ++
-                show gq ++ "\t" ++
-                stallStructure p ++ "\n"
+formatStats p = (intercalate "\t" $ map show ls) ++ "\n"
               where  (gp,gq)         = gilbertParams p
                      (sad,sdev,siat) = stallStats.pattern $ p
                      stall_ratio p = (fromIntegral.stall_time $ p)/ (fromIntegral.video_duration $ p)
-                      
+                     ls = [seqno, vd, stime, sratio, sad, sdev, siat, gp, gq]
+                     seqno = fromIntegral $ seq_number p
+                     vd = fromIntegral $ video_duration p
+                     stime = fromIntegral $ stall_time p
+                     sratio = stall_ratio p
+
 minimumPlayout = 30
 sane p = video_duration p > minimumPlayout && stall_time p > 0
 #+end_src
@@ -332,7 +328,7 @@ go = do
   We try and use a simple two-state Markov chain to generate stall patterns that
   (hopefully) resemble those found in the YouSlow traces. The generation code
   below is adapted from the simplified Gilbert loss generation code found in
-  [[https://github.com/mvarela/Gilbert-Loss-Trace-Generator]]. This approach should
+  [[https://github.com/BLINDEDFORREVIEW]]. This approach should
   allow to generate patterns that actually have the desired target statistics
   (which for short video durations, is not necessarily easy to obtain as it may
   take up to 4K iterations for the process to reach a steady state, based on
