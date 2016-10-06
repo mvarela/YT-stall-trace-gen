@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>YouSlow Data Set Analysis and YouTube-like Stall Pattern Generation</title>
-<!-- 2016-10-06 Thu 08:42 -->
+<!-- 2016-10-06 Thu 08:45 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Martin Varela" />
@@ -474,12 +474,12 @@ tab-separated lines on <code>stdout</code>.
 formatStats p = (intercalate "\t" $ map show ls) ++ "\n"
 	      where  (gp,gq)         = gilbertParams p
 		     (sad,sdev,siat) = stallStats.pattern $ p
-		     stall_ratio p = (fromIntegral.stall_time $ p)/ (fromIntegral.video_duration $ p)
-		     ls = [seqno, vd, stime, sratio, sad, sdev, siat, gp, gq]
-		     seqno = fromIntegral $ seq_number p
-		     vd = fromIntegral $ video_duration p
-		     stime = fromIntegral $ stall_time p
-		     sratio = stall_ratio p
+		     stall_ratio p   = (fromIntegral.stall_time $ p)/ (fromIntegral.video_duration $ p)
+		     ls              = [seqno, vd, stime, sratio, sad, sdev, siat, gp, gq]
+		     seqno           = fromIntegral $ seq_number p
+		     vd              = fromIntegral $ video_duration p
+		     stime           = fromIntegral $ stall_time p
+		     sratio          = stall_ratio p
 
 minimumPlayout = 30
 sane p = video_duration p &gt; minimumPlayout &amp;&amp; stall_time p &gt; 0
@@ -1113,7 +1113,7 @@ capture.output(s_avg_inter_stall_time, file='R/full_avg_inter_stall_time.txt')
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Martin Varela</p>
-<p class="date">Created: 2016-10-06 Thu 08:42</p>
+<p class="date">Created: 2016-10-06 Thu 08:45</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
